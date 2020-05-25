@@ -1,0 +1,34 @@
+{
+  "name": "exporter",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "nodemon",
+    "debug": "npm run build && node --inspect dist/www.js",
+    "test": "nyc mocha -r ts-node/register tests/**/*.ts",
+    "prodstart": "node dist/www.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahora/exporter.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ahora/exporter/issues"
+  },
+  "homepage": "https://github.com/ahora/exporter#readme",
+  "devDependencies": {
+    "@types/single-line-log": "^1.1.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "p-queue": "^6.3.0",
+    "rest-collector": "^1.0.10",
+    "single-line-log": "^1.1.2"
+  }
+}
