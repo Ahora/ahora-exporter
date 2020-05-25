@@ -14,7 +14,7 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
         this.entitiesMap = new Map<number, TCreate>();
     }
 
-    protected abstract getEntities(): Promise<void>;
+    protected abstract getEntities(): Promise<number>;
     protected abstract converSourceToDist(source: TSource): Promise<TUPDATE>;
     protected abstract startSync(): Promise<void>;
     protected abstract async updateDist(sources: TSource[]): Promise<void>;

@@ -13,7 +13,7 @@ const client: RestCollectorClient<GitHubRepository[]> = createGithubRestClient("
 export const getRepositories = async (login: string, page:number): Promise<GitHubRepository[]> => {
     const result = await client.get({
         params: { login },
-        query: { page, sort: "pushed" }
+        query: { page, sort: "pushed", per_page: 100 }
     });
     return result.data;
 }

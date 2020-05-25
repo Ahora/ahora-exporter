@@ -23,19 +23,16 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
         super(ahoraEntity, organizationData, docSource);
 
         this.queue = new PQueue({concurrency: 30});
-
-        setInterval(()=> {
-            console.log(this.queue.size, this.queue.pending);
-        }, 3000);
     }
 
     protected getQuery(): any {
         return {};
     }
 
-    protected async getEntities(): Promise<void> {
+    protected async getEntities(): Promise<number> {
         let shouldContinue: boolean = true;
         let page = 1;
+        let totalNumberOfEntities = 0;
 
         do {
             const client: RestCollectorClient = createGithubRestClient("https://api.github.com/repos/{organization}/{repo}/{githubEntity}");
@@ -57,8 +54,11 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
                 page = page +1;
             }
 
+            totalNumberOfEntities += result.data.length;
             await this.updateDist(result.data);
         } while(shouldContinue)
+
+        return totalNumberOfEntities;
     }    
 
     protected async updateDist(entities: TSource[]): Promise<void> {
@@ -85,7 +85,9 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
     }
     
     protected async startSync() {
-       await this.getEntities();
+       const totalEntities = await this.getEntities();
+       console.log(totalEntities);
        await this.queue.onIdle();
+
     }
 }

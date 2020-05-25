@@ -27,9 +27,9 @@ export default class SyncDocSource {
     async sync() {
         // The order is very important!
         // Update issue to the end
-        console.log(`sync milestones ${this.docSource.organization}/${this.docSource.repo}`);
+        //console.log(`sync milestones ${this.docSource.organization}/${this.docSource.repo}`);
         //await this.milestonesService.sync();
-        console.log(`sync labels ${this.docSource.organization}/${this.docSource.repo}`);
+        //console.log(`sync labels ${this.docSource.organization}/${this.docSource.repo}`);
         //await this.labelsService.sync();
         console.log(`sync issues ${this.docSource.organization}/${this.docSource.repo}`);
         await this.issuesService.sync();
