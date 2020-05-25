@@ -1,4 +1,4 @@
-export default interface AhoraMilestone {
+export interface AhoraMilestoneForUpdate {
     id?: number;
     title: string;
     description: string;
@@ -7,5 +7,9 @@ export default interface AhoraMilestone {
     sourceId: number;
     closedAt?: Date;
     dueOn?: Date;
-    state: "open" | "closed";
+    state: string;
+}
+
+export default interface AhoraMilestone extends AhoraMilestoneForUpdate{
+    milestoneId: number;
 }

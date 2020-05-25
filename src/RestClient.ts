@@ -10,8 +10,8 @@ const GitHubRequest = (req: RestCollectorRequest, bag?: any): void => {
 
 
 export const createRestClient = (path: string): RestCollectorClient => {
-    //return new RestCollectorClient(`https://ahora.dev${path}`,  { decorateRequest });
-    return new RestCollectorClient(`http://localhost:3001${path}`,  { decorateRequest });
+    return new RestCollectorClient(`https://ahora.dev${path}`,  { decorateRequest });
+    //return new RestCollectorClient(`http://localhost:3001${path}`,  { decorateRequest });
 };
 
 

@@ -14,10 +14,33 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
         this.entitiesMap = new Map<number, TCreate>();
     }
 
-    protected abstract getEntities(): Promise<TSource[]>;
+    protected abstract getEntities(): Promise<void>;
     protected abstract converSourceToDist(source: TSource): Promise<TUPDATE>;
-    public abstract sync(): Promise<void>;
+    protected abstract startSync(): Promise<void>;
+    protected abstract async updateDist(sources: TSource[]): Promise<void>;
 
+    public async sync(): Promise<void> {
+        const startSyncTime = new Date();
+
+        //Report start sync
+        this.client.put({
+            params: { organizationId: this.organizationData.organizationId, docSourceId: this.docSource.id },
+            data: {
+                syncing: true,
+                startSyncTime
+            }             
+        });
+        await this.startSync(); 
+
+        //Report start completed
+        this.client.put({
+            params: { organizationId: this.organizationData.organizationId, docSourceId: this.docSource.id },
+            data: {
+                lastUpdated: new Date(),
+                syncing: false
+            }             
+        });
+    }
     public async load() {
         const entitiesResult = await this.client.get({
             params: { 

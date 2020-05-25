@@ -36,6 +36,14 @@ export default class GithubSyncIssuesService extends GithubBaseSyncService<Doc, 
         super(organizationData, syncDocSource.docSource, "issues", "issues");
     }
 
+    protected getQuery(): any {
+        return {
+            state: this.docSource.lastUpdated? "all": "open",
+            per_page: 100,
+            since: this.docSource.lastUpdated
+        };
+    }
+
 
     protected async converSourceToDist(source: GithubIssue): Promise<Doc> {
         let docType = this.organizationData.docTypesMap.get(source.pull_request ? PULL_REQUEST: ISSUE);
@@ -70,7 +78,7 @@ export default class GithubSyncIssuesService extends GithubBaseSyncService<Doc, 
         if(source.milestone) {
             const milestone: AhoraMilestone =  await this.syncDocSource.milestonesService.upsert(source.milestone);
             if(milestone) {
-                doc.milestoneId =  milestone.id;
+                doc.milestoneId =  milestone.milestoneId;
             }
         }
 

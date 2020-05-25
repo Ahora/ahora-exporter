@@ -2,7 +2,7 @@ import SyncEntityService from "./SyncEntityService";
 import { AhoraDocSource } from "../docsources";
 import GithubSyncLabelsService, { GitHubLabel } from "../GithubSync/GithubSyncLabelsService";
 import GithubSyncMilestoneService, { GitHubMilestone } from "../GithubSync/GithubSyncMilestonesService";
-import AhoraMilestone from "../models/Milestone";
+import AhoraMilestone, { AhoraMilestoneForUpdate } from "../models/Milestone";
 import { Doc } from "../models/Doc";
 import GithubSyncIssuesService, { GithubIssue } from "../GithubSync/GithubSyncIssuesService";
 import OrganizationData from "../organizationData";
@@ -10,7 +10,7 @@ import { AhoraDocSourceLabel, AhoraDocSourceLabelForUpdate } from "../models/Doc
 
 export default class SyncDocSource {
     public readonly labelsService: SyncEntityService<AhoraDocSourceLabel, GitHubLabel, AhoraDocSourceLabelForUpdate>;
-    public readonly milestonesService: SyncEntityService<AhoraMilestone, GitHubMilestone>;
+    public readonly milestonesService: SyncEntityService<AhoraMilestone, GitHubMilestone, AhoraMilestoneForUpdate>;
     public readonly issuesService: SyncEntityService<Doc, GithubIssue>;
 
     constructor(public readonly organizationData: OrganizationData, public readonly docSource: AhoraDocSource) {

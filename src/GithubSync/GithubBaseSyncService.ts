@@ -3,6 +3,8 @@ import { AhoraDocSource } from "../docsources";
 import { createGithubRestClient } from "../RestClient";
 import { RestCollectorClient } from "rest-collector";
 import OrganizationData from "../organizationData";
+import PQueue from "p-queue";
+import { stdout } from "single-line-log";
 
 export interface GitHubLabel {
     id: number,
@@ -13,12 +15,25 @@ export interface GitHubLabel {
 
 export default abstract class GithubBaseSyncService<TDIST extends { id?: number, sourceId: number }, TSource extends { id: any }, TUPDATE = TDIST> extends SyncEntityService<TDIST, TSource, TUPDATE> {
     
+    private queue: PQueue;
+    private reStartInterval?: number;
+    private consolelogInterval?: number;
+
     constructor(organizationData: OrganizationData, docSource: AhoraDocSource, private readonly githubEntity: string, ahoraEntity: string) {
         super(ahoraEntity, organizationData, docSource);
+
+        this.queue = new PQueue({concurrency: 30});
+
+        setInterval(()=> {
+            console.log(this.queue.size, this.queue.pending);
+        }, 3000);
     }
 
-    protected async getEntities(): Promise<TSource[]> {
-        let entities: TSource[] = [];
+    protected getQuery(): any {
+        return {};
+    }
+
+    protected async getEntities(): Promise<void> {
         let shouldContinue: boolean = true;
         let page = 1;
 
@@ -26,7 +41,7 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
             const client: RestCollectorClient = createGithubRestClient("https://api.github.com/repos/{organization}/{repo}/{githubEntity}");
             //Get by page
             let result = await client.get({ 
-                query: { page},
+                query: { ...this.getQuery(), page },
                 params: {
                     githubEntity: this.githubEntity,
                     organization: this.docSource.organization,
@@ -41,18 +56,36 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
             else {
                 page = page +1;
             }
-            shouldContinue = false;
-            //Join all data
-            entities = [...entities, ...result.data]
+
+            await this.updateDist(result.data);
         } while(shouldContinue)
+    }    
 
-        //return all entities that were found
-        return entities;
+    protected async updateDist(entities: TSource[]): Promise<void> {
+        entities.forEach((entity) => {
+            this.queue.add(async () => {
+                try {
+                    await this.upsert(entity);
+                } catch (error) {
+                    this.queue.pause();
+                    this.queue.add(async ()=> {
+                        await this.upsert(entity);
+                    });
 
+                    if(this.reStartInterval) {
+                        clearTimeout(this.reStartInterval);
+                    }
+
+                    this.reStartInterval = setTimeout(()=> {
+                        this.queue.start();
+                    }, 10 * 1000);
+                }
+            });
+        });
     }
     
-    public async sync() {
-        const entities: TSource[] = await this.getEntities();
-        await Promise.all(entities.map((source) => { this.upsert(source); }));
+    protected async startSync() {
+       await this.getEntities();
+       await this.queue.onIdle();
     }
 }
