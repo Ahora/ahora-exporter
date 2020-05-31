@@ -1,10 +1,10 @@
 import { getRepositories, GitHubRepository, syncRepository } from "./repositories";
-import { AhoraDocSource, getDocSources, addDocSource } from "./docsources";
+import { AhoraDocSource, getDocSources, addDocSource, getAllDocSources } from "./docsources";
 import OrganizationData, { getOrganizationData } from "./organizationData";
 
-const doit = async (organizationId: string): Promise<void> => {
+const doit = async (organizationId: string, docSources: AhoraDocSource[]): Promise<void> => {
     try {
-        const organizationData: OrganizationData = await getOrganizationData(organizationId);
+        const organizationData: OrganizationData = await getOrganizationData(organizationId, docSources);
 
         for (let index = 0; index < organizationData.docSources.length; index++) {
             const docSource = organizationData.docSources[index];
@@ -15,6 +15,32 @@ const doit = async (organizationId: string): Promise<void> => {
     }
 };
 
+
+
+const getData = async () => {
+    const organizationDocSourceMap: Map<string, AhoraDocSource[]> = new Map();
+    const sources =  await getAllDocSources();
+
+    console.log(`total sources: ${sources.length}`);
+
+    sources.forEach((source) => {
+        if(!organizationDocSourceMap.has(source.organizationFK.login)) {
+            organizationDocSourceMap.set(source.organizationFK.login, []);
+        }
+
+        let docSources = organizationDocSourceMap.get(source.organizationFK.login);
+        if(docSources) {
+            docSources.push(source);
+        }
+    });
+
+    organizationDocSourceMap.forEach(async (val, key) =>{
+        await doit(key, val);
+    });
+}
+getData();
+/*
+
 const addSource =  async(organization: string, repo: string) => {
     const source = await addDocSource(organization, {
         organization,
@@ -24,7 +50,6 @@ const addSource =  async(organization: string, repo: string) => {
 
     console.log("added", repo);
 }
-
 
 
 const addAllOrgRepo =  async(organization: string, page:number=1) => {
@@ -53,16 +78,21 @@ const addRepos = async (orgName: string,  total: number) => {
         await addAllOrgRepo(orgName, index);
     }
 }
-const orgName: string = "observatorium";
+
 //addRepos(orgName, 16);
-
-
 //addSource("kubernetes", "kubernetes");
 //addSource("openshift", "cluster-api-provider-baremetal")
 //addSource("kubevirt", "node-maintenance-operator")
 
+const orgs = ["kubernetes", "openshift", "observatorium"]
+
 try {
-    doit(orgName);
+    for (let index = 0; index < orgs.length; index++) {
+        const currentOrgName = orgs[index];
+        doit(currentOrgName);
+    }
 } catch (error) {
     console.log(error);
 }
+
+*/

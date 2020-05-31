@@ -56,7 +56,7 @@ export const addMultipleOrganization = async (organizations: GithubOrganization[
                         });
                     } catch (error) {
                         if(error.status !== 409) {
-                            throw new Error("erez");
+                            throw error;
                         }
                     }
                 }

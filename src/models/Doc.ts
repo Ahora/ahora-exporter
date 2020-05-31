@@ -1,6 +1,6 @@
 export interface Doc {
     id?: any;
-    docId?: number;
+    sourceId: number;
     subject: string;
     description?: string;
     assigneeUserId?: number;
@@ -14,7 +14,7 @@ export interface Doc {
     createdAt: Date | string;
     closedAt: Date | string | null;
     updatedAt: Date | string;
-    sourceId: number
+    docSourceId: number
 }
 export interface AhoraDoc extends Doc {
     id: number;

@@ -48,6 +48,7 @@ export default class GithubSyncIssuesService extends GithubBaseSyncService<Doc, 
     protected async converSourceToDist(source: GithubIssue): Promise<Doc> {
         let docType = this.organizationData.docTypesMap.get(source.pull_request ? PULL_REQUEST: ISSUE);
         const doc: Doc = {
+            docSourceId: this.docSource.id!,
             sourceId: source.number,
             subject: source.title,
             description: source.body,

@@ -64,17 +64,24 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
         else {
 
             const dist = await this.converSourceToDist(source);
-            const result = await this.client.post({
-                params: { 
-                    organizationId: this.organizationData.organizationId, 
-                    docSourceId: this.docSource.id,
-                    entityName: this.entityName
-                },
-                data: dist
-            });
-            const entityFromServer = result.data;
-            this.entitiesMap.set(source.id, entityFromServer);
-            return entityFromServer;
+            try {
+                const result = await this.client.post({
+                    params: { 
+                        organizationId: this.organizationData.organizationId, 
+                        docSourceId: this.docSource.id,
+                        entityName: this.entityName
+                    },
+                    data: dist
+                });
+                //console.log("end", new Date(), source.id)
+                const entityFromServer = result.data;
+                this.entitiesMap.set(source.id, entityFromServer);
+                return entityFromServer;
+            } catch (error) {
+                console.error("start", new Date(), this.docSource.id, this.entityName, source.id, dist, error);
+                throw error;
+            }
+            
         }
     }
 }

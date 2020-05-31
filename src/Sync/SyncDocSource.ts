@@ -31,7 +31,6 @@ export default class SyncDocSource {
         //await this.milestonesService.sync();
         //console.log(`sync labels ${this.docSource.organization}/${this.docSource.repo}`);
         //await this.labelsService.sync();
-        console.log(`sync issues ${this.docSource.organization}/${this.docSource.repo}`);
         await this.issuesService.sync();
     }
 }

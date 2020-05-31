@@ -4,6 +4,7 @@ import { AhoraDocSource, getDocSources } from "./docsources";
 import { RestCollectorClient } from "rest-collector";
 import { createRestClient } from "./RestClient";
 import SyncDocSource from "./Sync/SyncDocSource";
+import { AhoraDoc } from "./models/Doc";
 
 export default class OrganizationData {
     public readonly statusesMap: Map<string, AhoraDocStatus>;
@@ -24,14 +25,13 @@ export default class OrganizationData {
 } 
 
 
-export const getOrganizationData = async (organizationId: string): Promise<OrganizationData>=> {
+export const getOrganizationData = async (organizationId: string, docSources: AhoraDocSource[]): Promise<OrganizationData>=> {
 
     const data: OrganizationData = new OrganizationData(organizationId);
 
     //Load data from Ahora servers
     const statuses: AhoraDocStatus[] = await getStatuses(organizationId);
     const docTypes: AhoraDocType[] = await getDocTypes(organizationId);
-    const docSources: AhoraDocSource[] = await getDocSources(organizationId);
 
     //Fill in doc types!
     docTypes.forEach((docType) => { data.docTypesMap.set(docType.code, docType); });

@@ -85,9 +85,9 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
     }
     
     protected async startSync() {
-       const totalEntities = await this.getEntities();
-       console.log(totalEntities);
-       await this.queue.onIdle();
-
-    }
+        const totalEntities = await this.getEntities();
+        console.log(`${this.docSource.organization}/${this.docSource.repo}`, totalEntities);
+        await this.queue.onIdle(); 
+        
+       }
 }
