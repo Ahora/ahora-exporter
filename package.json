@@ -10,7 +10,7 @@
     "dev": "nodemon",
     "debug": "npm run build && node --inspect dist/www.js",
     "test": "nyc mocha -r ts-node/register tests/**/*.ts",
-    "prodstart": "node dist/www.js"
+    "prodstart": "node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@types/node": "^14.0.6",
     "p-queue": "^6.3.0",
     "rest-collector": "^1.0.10",
     "single-line-log": "^1.1.2"

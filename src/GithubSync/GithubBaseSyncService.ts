@@ -16,7 +16,7 @@ export interface GitHubLabel {
 export default abstract class GithubBaseSyncService<TDIST extends { id?: number, sourceId: number }, TSource extends { id: any }, TUPDATE = TDIST> extends SyncEntityService<TDIST, TSource, TUPDATE> {
     
     private queue: PQueue;
-    private reStartInterval?: number;
+    private reStartInterval?: NodeJS.Timeout;
     private consolelogInterval?: number;
 
     constructor(organizationData: OrganizationData, docSource: AhoraDocSource, private readonly githubEntity: string, ahoraEntity: string) {
