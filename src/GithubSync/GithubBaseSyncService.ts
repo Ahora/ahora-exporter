@@ -25,6 +25,11 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
         this.queue = new PQueue({concurrency: 30});
     }
 
+    //Default implementation is to do nothing.
+    protected filterSources(sources: TSource[]): Promise<TSource[]> {
+        return Promise.resolve(sources);
+    }
+
     protected getQuery(): any {
         return {};
     }
@@ -54,8 +59,9 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
                 page = page +1;
             }
 
-            totalNumberOfEntities += result.data.length;
-            await this.updateDist(result.data);
+            const sourceEntities = await this.filterSources(result.data);
+            totalNumberOfEntities += sourceEntities.length;
+            await this.updateDist(sourceEntities);
         } while(shouldContinue)
 
         return totalNumberOfEntities;

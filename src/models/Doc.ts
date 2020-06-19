@@ -7,6 +7,7 @@ export interface Doc {
     reporterUserId?: number;
     commentsNumber: number;
     docTypeId: number;
+    locked: boolean;
     milestoneId?: number;
     metadata?: any;
     statusId?: number;

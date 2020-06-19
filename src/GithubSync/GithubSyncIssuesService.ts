@@ -3,12 +3,12 @@ import { GithubUser, AhoraUser, addUserFromGithubUser } from "../users";
 import { GitHubLabel } from "./GithubSyncLabelsService";
 import { Doc } from "../models/Doc";
 import { AhoraDocStatus } from "../stratuses";
-import { ISSUE, PULL_REQUEST } from "../docTypes";
 import OrganizationData from "../organizationData";
 import SyncDocSource from "../Sync/SyncDocSource";
 import { GitHubMilestone } from "./GithubSyncMilestonesService";
 import AhoraMilestone from "../models/Milestone";
 import { AhoraDocSourceLabel } from "../models/DocSourceLabel";
+import { ISSUE_DOCTYPE_ID } from "../docTypes";
 
 
 export interface GithubIssue {
@@ -30,10 +30,10 @@ export interface GithubIssue {
 }
 
 
-export default class GithubSyncIssuesService extends GithubBaseSyncService<Doc, GithubIssue> {
+export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource extends GithubIssue = GithubIssue> extends GithubBaseSyncService<Doc, TSource> {
 
-    constructor(organizationData: OrganizationData, private syncDocSource: SyncDocSource) {
-        super(organizationData, syncDocSource.docSource, "issues", "issues");
+    constructor(organizationData: OrganizationData, protected syncDocSource: SyncDocSource, githubEntity: string = "issues") {
+        super(organizationData, syncDocSource.docSource, githubEntity || "pulls", "issues");
     }
 
     protected getQuery(): any {
@@ -44,17 +44,22 @@ export default class GithubSyncIssuesService extends GithubBaseSyncService<Doc, 
         };
     }
 
+    //Filter issues that are not pull requests.
+    protected filterSources(sources: TSource[]): Promise<TSource[]> {
+        return Promise.resolve(sources.filter((source) => !source.pull_request));
+    }
 
-    protected async converSourceToDist(source: GithubIssue): Promise<Doc> {
-        let docType = this.organizationData.docTypesMap.get(source.pull_request ? PULL_REQUEST: ISSUE);
+
+    protected async converSourceToDist(source: TSource): Promise<Doc> {
         const doc: Doc = {
             docSourceId: this.docSource.id!,
             sourceId: source.number,
             subject: source.title,
             description: source.body,
+            locked: source.locked,
             closedAt: source.closed_at,
             commentsNumber: source.comments,
-            docTypeId: docType!.id,
+            docTypeId: ISSUE_DOCTYPE_ID,
             createdAt: source.created_at,
             updatedAt: source.updated_at,
         }

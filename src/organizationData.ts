@@ -38,12 +38,7 @@ export const getOrganizationData = async (organizationId: string, docSources: Ah
 
     //Fill in statuses!
     statuses.forEach((status) => {
-        if(status.name === "Opened") {
-            data.statusesMap.set("open", status);
-        }
-        else if(status.name === "Closed") {
-            data.statusesMap.set("closed", status);
-        }
+        data.statusesMap.set(status.name, status);
     });
 
     //Generate SyncDocSource and send organization data mostly for issues sync (getting accesses to statuses and doc types)

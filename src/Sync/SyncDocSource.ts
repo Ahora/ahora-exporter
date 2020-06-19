@@ -7,16 +7,19 @@ import { Doc } from "../models/Doc";
 import GithubSyncIssuesService, { GithubIssue } from "../GithubSync/GithubSyncIssuesService";
 import OrganizationData from "../organizationData";
 import { AhoraDocSourceLabel, AhoraDocSourceLabelForUpdate } from "../models/DocSourceLabel";
+import GithubSyncPullsService, { AhoraPullRequest, GithubPull } from "../GithubSync/GithubSyncPullsService.1";
 
 export default class SyncDocSource {
     public readonly labelsService: SyncEntityService<AhoraDocSourceLabel, GitHubLabel, AhoraDocSourceLabelForUpdate>;
     public readonly milestonesService: SyncEntityService<AhoraMilestone, GitHubMilestone, AhoraMilestoneForUpdate>;
     public readonly issuesService: SyncEntityService<Doc, GithubIssue>;
+    public readonly pullsService: SyncEntityService<AhoraPullRequest, GithubPull>;
 
     constructor(public readonly organizationData: OrganizationData, public readonly docSource: AhoraDocSource) {
         this.labelsService = new GithubSyncLabelsService(organizationData, docSource);
         this.milestonesService = new GithubSyncMilestoneService(organizationData, docSource);
         this.issuesService = new GithubSyncIssuesService(organizationData, this);
+        this.pullsService = new GithubSyncPullsService(organizationData, this);
     }
 
     async loadData() {
@@ -25,12 +28,7 @@ export default class SyncDocSource {
     }
 
     async sync() {
-        // The order is very important!
-        // Update issue to the end
-        //console.log(`sync milestones ${this.docSource.organization}/${this.docSource.repo}`);
-        //await this.milestonesService.sync();
-        //console.log(`sync labels ${this.docSource.organization}/${this.docSource.repo}`);
-        //await this.labelsService.sync();
         await this.issuesService.sync();
+        await this.pullsService.sync();
     }
 }

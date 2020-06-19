@@ -1,8 +1,8 @@
 import { RestCollectorClient } from "rest-collector";
 import { createRestClient } from "./RestClient";
 
-export const PULL_REQUEST: string = "PullRequest";
-export const ISSUE: string = "Issue";
+export const PULL_REQUEST_ID: number = 2;
+export const ISSUE_DOCTYPE_ID: number = 1;
 
 export interface AhoraDocType {
     id: number;

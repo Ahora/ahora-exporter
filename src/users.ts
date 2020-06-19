@@ -49,6 +49,8 @@ export const addUser = async (user: User):  Promise<AhoraUser> => {
         userFromCache = addedUser;
     }
 
+    //Don't add organizations for each user
+    /*
     if(userFromCache) {
         const githubResult = await userOrganizationsClient.get({
             params: { login: userFromCache.username} 
@@ -57,6 +59,7 @@ export const addUser = async (user: User):  Promise<AhoraUser> => {
         const GithubOrganizations: GithubOrganization[] = githubResult.data;
         await addMultipleOrganization(GithubOrganizations, userFromCache.id);
     }
+    */
 
     return userFromCache;
 }
