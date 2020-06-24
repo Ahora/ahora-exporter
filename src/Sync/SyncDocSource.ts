@@ -7,7 +7,7 @@ import { Doc } from "../models/Doc";
 import GithubSyncIssuesService, { GithubIssue } from "../GithubSync/GithubSyncIssuesService";
 import OrganizationData from "../organizationData";
 import { AhoraDocSourceLabel, AhoraDocSourceLabelForUpdate } from "../models/DocSourceLabel";
-import GithubSyncPullsService, { AhoraPullRequest, GithubPull } from "../GithubSync/GithubSyncPullsService.1";
+import GithubSyncPullsService, { AhoraPullRequest, GithubPull } from "../GithubSync/GithubSyncPullsService";
 
 export default class SyncDocSource {
     public readonly labelsService: SyncEntityService<AhoraDocSourceLabel, GitHubLabel, AhoraDocSourceLabelForUpdate>;

@@ -3,6 +3,7 @@ import OrganizationData from "../organizationData";
 import SyncDocSource from "../Sync/SyncDocSource";
 import GithubSyncIssuesService, { GithubIssue } from "./GithubSyncIssuesService";
 import { GithubUser, AhoraUser, addUserFromGithubUser } from "../users";
+import { PULL_REQUEST_ID } from "../docTypes";
 
 export interface GithubPullRequestAdditionalData {
     draft: boolean;
@@ -34,7 +35,7 @@ export default class GithubSyncPullsService extends GithubSyncIssuesService<Ahor
 
     //Override filter sources to allow all entities if getting pull requests
     protected filterSources(sources: GithubPull[]): Promise<GithubPull[]> {
-        return Promise.resolve(sources.filter((source) => !source.pull_request));
+        return Promise.resolve(sources);
     }
 
     protected async converSourceToDist(source: GithubPull): Promise<Doc> {
@@ -42,6 +43,7 @@ export default class GithubSyncPullsService extends GithubSyncIssuesService<Ahor
 
         let mergedByUserId: number | undefined;
         if(source.merged_by) {
+            doc.docTypeId = PULL_REQUEST_ID;
             const ahoraAssignee: AhoraUser = await addUserFromGithubUser(source.merged_by);
             mergedByUserId = ahoraAssignee.id
         }
