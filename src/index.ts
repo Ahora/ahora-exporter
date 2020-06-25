@@ -27,7 +27,7 @@ const doit = async (organizationId: string, docSources: AhoraDocSource[]): Promi
             await docSourceClient.put({
                 params: { organizationId: organizationData.organizationId, docSourceId: docSource.docSource.id },
                 data: {
-                    lastUpdated: null,
+                    lastUpdated: new Date(),
                     syncing: false
                 }             
             });
