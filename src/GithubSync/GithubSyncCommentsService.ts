@@ -3,6 +3,7 @@ import { GithubUser, AhoraUser, addUserFromGithubUser } from "../users";
 import { Comment } from "../models/Comment";
 import OrganizationData from "../organizationData";
 import SyncDocSource from "../Sync/SyncDocSource";
+import { Doc } from "../models/Doc";
 
 export interface GithubComment {
     id: number;
@@ -14,38 +15,32 @@ export interface GithubComment {
 }
 
 
-export default class GithubSyncCommentsService<TDIST extends Comment = Comment, TSource extends GithubComment = GithubComment> extends GithubBaseSyncService<Comment, TSource> {
+export default class GithubSyncCommentsService extends GithubBaseSyncService<Comment, GithubComment> {
 
-    constructor(organizationData: OrganizationData, protected syncDocSource: SyncDocSource, githubEntity: string = "issues") {
-        super(organizationData, syncDocSource.docSource, githubEntity || "pulls", "issues");
+    constructor(protected doc: Doc, organizationData: OrganizationData, protected syncDocSource: SyncDocSource) {
+        super(organizationData, syncDocSource.docSource, `issues/${doc.sourceId}/comments`, "comments", "/internal/sync/docsources/{docSourceId}/comments");
     }
 
     protected getQuery(): any {
         return {
-            state: this.docSource.lastUpdated? "all": "open",
             per_page: 100,
             since: this.docSource.lastUpdated
         };
     }
 
-    protected async converSourceToDist(source: TSource): Promise<Comment> {
-
-        const splitArray = source.html_url.split("#");
-        const splitIssueId = splitArray[0].split("/");
-
+    protected async converSourceToDist(source: GithubComment): Promise<Comment> {
         const comment: Comment = {
             sourceId: source.id,
             comment: source.body,
             createdAt: source.created_at,
             updatedAt: source.updated_at,
-            githubIssueId: parseInt(splitIssueId[splitIssueId.length - 1])
+            docId: this.doc.id!
         }
 
         if(source.user) {
             const ahoraReporter: AhoraUser = await addUserFromGithubUser(source.user);
             comment.authorUserId = ahoraReporter.id;
         }
-
         return comment;
     }
 }

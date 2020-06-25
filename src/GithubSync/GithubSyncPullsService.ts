@@ -40,10 +40,10 @@ export default class GithubSyncPullsService extends GithubSyncIssuesService<Ahor
 
     protected async converSourceToDist(source: GithubPull): Promise<Doc> {
         const doc = await super.converSourceToDist(source);
+        doc.docTypeId = PULL_REQUEST_ID;
 
         let mergedByUserId: number | undefined;
         if(source.merged_by) {
-            doc.docTypeId = PULL_REQUEST_ID;
             const ahoraAssignee: AhoraUser = await addUserFromGithubUser(source.merged_by);
             mergedByUserId = ahoraAssignee.id
         }

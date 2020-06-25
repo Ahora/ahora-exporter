@@ -1,6 +1,10 @@
-import { getRepositories, GitHubRepository, syncRepository } from "./repositories";
-import { AhoraDocSource, getDocSources, addDocSource, getAllDocSources } from "./docsources";
+import { AhoraDocSource, getAllDocSources } from "./docsources";
 import OrganizationData, { getOrganizationData } from "./organizationData";
+import { RestCollectorClient } from "rest-collector";
+import { createRestClient } from "./RestClient";
+
+const docSourceClient = createRestClient("/api/organizations/{organizationId}/docSources/{docSourceId}");
+
 
 const doit = async (organizationId: string, docSources: AhoraDocSource[]): Promise<void> => {
     try {
@@ -8,7 +12,25 @@ const doit = async (organizationId: string, docSources: AhoraDocSource[]): Promi
 
         for (let index = 0; index < organizationData.docSources.length; index++) {
             const docSource = organizationData.docSources[index];
+            const startSyncTime = new Date();
+            await docSourceClient.put({
+                params: { organizationId: organizationData.organizationId, docSourceId: docSource.docSource.id },
+                data: {
+                    syncing: true,
+                    startSyncTime
+                }
+            });
+
             await docSource.sync();
+
+            //Report start completed
+            await docSourceClient.put({
+                params: { organizationId: organizationData.organizationId, docSourceId: docSource.docSource.id },
+                data: {
+                    lastUpdated: null,
+                    syncing: false
+                }             
+            });
         }
     } catch (error) {
         console.error(error);

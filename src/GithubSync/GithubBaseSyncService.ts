@@ -17,10 +17,9 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
     
     private queue: PQueue;
     private reStartInterval?: NodeJS.Timeout;
-    private consolelogInterval?: number;
 
-    constructor(organizationData: OrganizationData, docSource: AhoraDocSource, private readonly githubEntity: string, ahoraEntity: string) {
-        super(ahoraEntity, organizationData, docSource);
+    constructor(organizationData: OrganizationData, docSource: AhoraDocSource, private readonly githubEntity: string, ahoraEntity: string, ahoraEndpoint?: string) {
+        super(ahoraEntity, organizationData, docSource, ahoraEndpoint);
 
         this.queue = new PQueue({concurrency: 30});
     }
@@ -40,12 +39,11 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
         let totalNumberOfEntities = 0;
 
         do {
-            const client: RestCollectorClient = createGithubRestClient("https://api.github.com/repos/{organization}/{repo}/{githubEntity}");
+            const client: RestCollectorClient = createGithubRestClient(`https://api.github.com/repos/{organization}/{repo}/${this.githubEntity}`);
             //Get by page
             let result = await client.get({ 
                 query: { ...this.getQuery(), page },
                 params: {
-                    githubEntity: this.githubEntity,
                     organization: this.docSource.organization,
                     repo: this.docSource.repo
                 }
@@ -92,7 +90,7 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
     
     protected async startSync() {
         const totalEntities = await this.getEntities();
-        console.log(`${this.docSource.organization}/${this.docSource.repo}`, totalEntities);
+        console.log(`${this.docSource.organization}/${this.docSource.repo}`, totalEntities, this.githubEntity);
         await this.queue.onIdle(); 
         
        }

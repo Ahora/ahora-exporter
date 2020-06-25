@@ -9,6 +9,7 @@ import { GitHubMilestone } from "./GithubSyncMilestonesService";
 import AhoraMilestone from "../models/Milestone";
 import { AhoraDocSourceLabel } from "../models/DocSourceLabel";
 import { ISSUE_DOCTYPE_ID } from "../docTypes";
+import GithubSyncCommentsService from "./GithubSyncCommentsService";
 
 
 export interface GithubIssue {
@@ -33,7 +34,7 @@ export interface GithubIssue {
 export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource extends GithubIssue = GithubIssue> extends GithubBaseSyncService<Doc, TSource> {
 
     constructor(organizationData: OrganizationData, protected syncDocSource: SyncDocSource, githubEntity: string = "issues") {
-        super(organizationData, syncDocSource.docSource, githubEntity || "pulls", "issues");
+        super(organizationData, syncDocSource.docSource, githubEntity, "issues");
     }
 
     protected getQuery(): any {
@@ -94,5 +95,10 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
         }
 
         return doc;
+    }
+
+    protected async afterSyncEntity(entity: Doc): Promise<void> { 
+        const syncCommentService = new GithubSyncCommentsService(entity, this.organizationData, this.syncDocSource);
+        await syncCommentService.sync();
     }
 }

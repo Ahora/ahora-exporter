@@ -5,7 +5,7 @@ export interface Comment {
     authorUserId?: number;
     createdAt: Date | string;
     updatedAt: Date | string;
-    githubIssueId: number
+    docId: number
 }
 
 export interface AhoraDoc extends Comment {

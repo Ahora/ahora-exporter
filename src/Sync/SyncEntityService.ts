@@ -9,37 +9,19 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
     private readonly client: RestCollectorClient<TCreate>;
     private entitiesMap: Map<number, TCreate>;
 
-    constructor(private entityName: string, protected organizationData: OrganizationData, protected docSource: AhoraDocSource) {
-        this.client = createRestClient(`/api/organizations/{organizationId}/docsources/{docSourceId}/{entityName}`);
+    constructor(private entityName: string, protected organizationData: OrganizationData, protected docSource: AhoraDocSource, ahoraEndpoint: string = "/api/organizations/{organizationId}/docsources/{docSourceId}/{entityName}") {
+        this.client = createRestClient(ahoraEndpoint);
         this.entitiesMap = new Map<number, TCreate>();
     }
 
     protected abstract getEntities(): Promise<number>;
     protected abstract converSourceToDist(source: TSource): Promise<TUPDATE>;
     protected abstract startSync(): Promise<void>;
+    protected afterSyncEntity(entity: TCreate): Promise<void> { return Promise.resolve(); }
     protected abstract async updateDist(sources: TSource[]): Promise<void>;
 
     public async sync(): Promise<void> {
-        const startSyncTime = new Date();
-
-        //Report start sync
-        this.client.put({
-            params: { organizationId: this.organizationData.organizationId, docSourceId: this.docSource.id },
-            data: {
-                syncing: true,
-                startSyncTime
-            }             
-        });
         await this.startSync(); 
-
-        //Report start completed
-        this.client.put({
-            params: { organizationId: this.organizationData.organizationId, docSourceId: this.docSource.id },
-            data: {
-                lastUpdated: new Date(),
-                syncing: false
-            }             
-        });
     }
     public async load() {
         const entitiesResult = await this.client.get({
@@ -49,7 +31,6 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
                 entityName: this.entityName
             }
         });
-        //TODO change client api to return array!
         const entities: TCreate[] = entitiesResult.data as any;
         entities.forEach((entity) => {
             this.entitiesMap.set(entity.sourceId, entity.id);
@@ -57,31 +38,25 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
     }
 
     public async upsert(source: TSource): Promise<TCreate> {
-        const labelFromCache: TCreate | undefined = this.entitiesMap.get(source.id);
-        if(labelFromCache) {
-            return Promise.resolve(labelFromCache);
+        const entityFromCache: TCreate | undefined = this.entitiesMap.get(source.id);
+        if(entityFromCache) {
+            return Promise.resolve(entityFromCache);
         }
         else {
 
             const dist = await this.converSourceToDist(source);
-            try {
-                const result = await this.client.post({
-                    params: { 
-                        organizationId: this.organizationData.organizationId, 
-                        docSourceId: this.docSource.id,
-                        entityName: this.entityName
-                    },
-                    data: dist
-                });
-                //console.log("end", new Date(), source.id)
-                const entityFromServer = result.data;
-                this.entitiesMap.set(source.id, entityFromServer);
-                return entityFromServer;
-            } catch (error) {
-                console.error("start", new Date(), this.docSource.id, this.entityName, source.id, dist, error);
-                throw error;
-            }
-            
+            const result = await this.client.post({
+                params: { 
+                    organizationId: this.organizationData.organizationId, 
+                    docSourceId: this.docSource.id,
+                    entityName: this.entityName
+                },
+                data: dist
+            });
+            const entityFromServer = result.data;
+            this.entitiesMap.set(source.id, entityFromServer);
+            await this.afterSyncEntity(entityFromServer);
+            return entityFromServer;            
         }
     }
 }
