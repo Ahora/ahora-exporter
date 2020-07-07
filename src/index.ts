@@ -1,11 +1,8 @@
 import { AhoraDocSource, getAllDocSources } from "./docsources";
 import OrganizationData, { getOrganizationData } from "./organizationData";
-import { RestCollectorClient } from "rest-collector";
 import { createRestClient } from "./RestClient";
 
 const docSourceClient = createRestClient("/api/organizations/{organizationId}/docSources/{docSourceId}");
-
-
 const doit = async (organizationId: string, docSources: AhoraDocSource[]): Promise<void> => {
     try {
         const organizationData: OrganizationData = await getOrganizationData(organizationId, docSources);

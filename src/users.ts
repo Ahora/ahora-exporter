@@ -1,6 +1,5 @@
 import { RestCollectorClient } from "rest-collector";
-import { createRestClient, createGithubRestClient } from "./RestClient";
-import { GithubOrganization, addMultipleOrganization } from "./organizations";
+import { createRestClient } from "./RestClient";
 
 export interface GithubUser {
     name: string;
@@ -20,7 +19,6 @@ export interface AhoraUser extends User {
 
 const usersCache: Map<string, AhoraUser> = new Map<string, AhoraUser>();
 const usersRestClient: RestCollectorClient = createRestClient("/api/users");
-const userOrganizationsClient: RestCollectorClient<GithubOrganization[]> = createGithubRestClient("https://api.github.com/users/{login}/orgs");
 
 export const addUserFromGithubUser = async (user: GithubUser):  Promise<AhoraUser> => {
     return await addUser({  displayName: user.name, gitHubId: user.id.toString(), username: user.login});

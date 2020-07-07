@@ -2,7 +2,6 @@ import GithubBaseSyncService from "./GithubBaseSyncService";
 import { GithubUser, AhoraUser, addUserFromGithubUser } from "../users";
 import { GitHubLabel } from "./GithubSyncLabelsService";
 import { Doc } from "../models/Doc";
-import { AhoraDocStatus } from "../stratuses";
 import OrganizationData from "../organizationData";
 import SyncDocSource from "../Sync/SyncDocSource";
 import { GitHubMilestone } from "./GithubSyncMilestonesService";
@@ -77,10 +76,7 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
         }
 
         if(source.state) {
-            const status: AhoraDocStatus | undefined =  this.organizationData.statusesMap.get(source.state);
-            if(status) {
-                doc.statusId =  status.id;
-            }
+            doc.statusId =  source.state === "open" ? 1: 2;
         }
 
         if(source.milestone) {
