@@ -3,6 +3,7 @@ export interface Doc {
     sourceId: number;
     subject: string;
     description?: string;
+    organizationId: number;
     assigneeUserId?: number;
     reporterUserId?: number;
     commentsNumber: number;

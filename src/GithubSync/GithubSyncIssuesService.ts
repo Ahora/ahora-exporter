@@ -34,12 +34,12 @@ export interface GithubIssue {
 export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource extends GithubIssue = GithubIssue> extends GithubBaseSyncService<Doc, TSource> {
 
     constructor(organizationData: OrganizationData, protected syncDocSource: SyncDocSource, githubEntity: string = "issues") {
-        super(organizationData, syncDocSource.docSource, githubEntity, "issues");
+        super(organizationData, syncDocSource.docSource, githubEntity, "issues", "/internal/sync/docsources/{docSourceId}/issues");
     }
 
     protected getQuery(): any {
         return {
-            state: this.docSource.lastUpdated? "all": "open",
+            state: this.docSource.lastUpdated === undefined ? "all": "open", //Pring all opened issues if first time of update (lastUpdate===null)
             per_page: 100,
             since: this.docSource.lastUpdated
         };
@@ -56,6 +56,7 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
             docSourceId: this.docSource.id!,
             sourceId: source.number,
             subject: source.title,
+            organizationId: this.docSource.organizationId,
             description: source.body,
             locked: source.locked,
             closedAt: source.closed_at,
