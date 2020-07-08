@@ -1,5 +1,5 @@
 import GithubBaseSyncService from "./GithubBaseSyncService";
-import { GithubUser, AhoraUser, addUserFromGithubUser } from "../users";
+import { GithubUser, AhoraUser, addUserFromGithubUser } from "../models/users";
 import { Comment } from "../models/Comment";
 import OrganizationData from "../organizationData";
 import SyncDocSource from "../Sync/SyncDocSource";

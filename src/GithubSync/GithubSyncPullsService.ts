@@ -2,8 +2,8 @@ import { Doc } from "../models/Doc";
 import OrganizationData from "../organizationData";
 import SyncDocSource from "../Sync/SyncDocSource";
 import GithubSyncIssuesService, { GithubIssue } from "./GithubSyncIssuesService";
-import { GithubUser, AhoraUser, addUserFromGithubUser } from "../users";
-import { PULL_REQUEST_ID } from "../docTypes";
+import { GithubUser, AhoraUser, addUserFromGithubUser } from "../models/users";
+import { PULL_REQUEST_ID } from "../models/docTypes";
 
 export interface GithubPullRequestAdditionalData {
     draft: boolean;

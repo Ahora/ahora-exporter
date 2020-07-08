@@ -1,5 +1,5 @@
 import { RestCollectorClient } from "rest-collector";
-import { createRestClient } from "./RestClient";
+import { createRestClient } from "../RestClient";
 
 export interface GithubUser {
     name: string;

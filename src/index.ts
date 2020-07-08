@@ -1,36 +1,32 @@
-import { AhoraDocSource, getAllDocSources } from "./docsources";
+import { AhoraDocSource, getAllDocSources } from "./models/docsources";
 import OrganizationData, { getOrganizationData } from "./organizationData";
 import { createRestClient } from "./RestClient";
 
-const docSourceClient = createRestClient("/api/organizations/{organizationId}/docSources/{docSourceId}");
+const docSourceClient = createRestClient("/internal/docsources/{docSourceId}");
 const doit = async (organizationId: string, docSources: AhoraDocSource[]): Promise<void> => {
-    try {
-        const organizationData: OrganizationData = await getOrganizationData(organizationId, docSources);
+    const organizationData: OrganizationData = await getOrganizationData(organizationId, docSources);
 
-        for (let index = 0; index < organizationData.docSources.length; index++) {
-            const docSource = organizationData.docSources[index];
-            const startSyncTime = new Date();
-            await docSourceClient.put({
-                params: { organizationId: organizationData.organizationId, docSourceId: docSource.docSource.id },
-                data: {
-                    syncing: true,
-                    startSyncTime
-                }
-            });
+    for (let index = 0; index < organizationData.docSources.length; index++) {
+        const docSource = organizationData.docSources[index];
+        const startSyncTime = new Date();
+        await docSourceClient.put({
+            params: { organizationId: organizationData.organizationId, docSourceId: docSource.docSource.id },
+            data: {
+                syncing: true,
+                startSyncTime
+            }
+        });
 
-            await docSource.sync();
+        await docSource.sync();
 
-            //Report start completed
-            await docSourceClient.put({
-                params: { organizationId: organizationData.organizationId, docSourceId: docSource.docSource.id },
-                data: {
-                    lastUpdated: new Date(),
-                    syncing: false
-                }             
-            });
-        }
-    } catch (error) {
-        console.error(error);
+        //Report start completed
+        await docSourceClient.put({
+            params: { organizationId: organizationData.organizationId, docSourceId: docSource.docSource.id },
+            data: {
+                lastUpdated: new Date(),
+                syncing: false
+            }             
+        });
     }
 };
 

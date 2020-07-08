@@ -1,4 +1,4 @@
-import { AhoraDocSource } from "../docsources";
+import { AhoraDocSource } from "../models/docsources";
 import GithubBaseSyncService from "./GithubBaseSyncService";
 import AhoraMilestone, { AhoraMilestoneForUpdate } from "../models/Milestone";
 import OrganizationData from "../organizationData";

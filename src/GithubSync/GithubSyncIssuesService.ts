@@ -1,5 +1,5 @@
 import GithubBaseSyncService from "./GithubBaseSyncService";
-import { GithubUser, AhoraUser, addUserFromGithubUser } from "../users";
+import { GithubUser, AhoraUser, addUserFromGithubUser } from "../models/users";
 import { GitHubLabel } from "./GithubSyncLabelsService";
 import { Doc } from "../models/Doc";
 import OrganizationData from "../organizationData";
@@ -7,7 +7,7 @@ import SyncDocSource from "../Sync/SyncDocSource";
 import { GitHubMilestone } from "./GithubSyncMilestonesService";
 import AhoraMilestone from "../models/Milestone";
 import { AhoraDocSourceLabel } from "../models/DocSourceLabel";
-import { ISSUE_DOCTYPE_ID } from "../docTypes";
+import { ISSUE_DOCTYPE_ID } from "../models/docTypes";
 import GithubSyncCommentsService from "./GithubSyncCommentsService";
 
 

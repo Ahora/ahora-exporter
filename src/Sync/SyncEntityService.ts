@@ -1,7 +1,7 @@
 
 import { RestCollectorClient } from "rest-collector";
 import { createRestClient } from "./../RestClient";
-import { AhoraDocSource } from "../docsources";
+import { AhoraDocSource } from "../models/docsources";
 import OrganizationData from "../organizationData";
 
 

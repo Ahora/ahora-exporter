@@ -1,5 +1,5 @@
 import SyncEntityService from "../Sync/SyncEntityService";
-import { AhoraDocSource } from "../docsources";
+import { AhoraDocSource } from "../models/docsources";
 import { createGithubRestClient } from "../RestClient";
 import { RestCollectorClient } from "rest-collector";
 import OrganizationData from "../organizationData";

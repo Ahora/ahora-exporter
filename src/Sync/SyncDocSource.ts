@@ -1,5 +1,5 @@
 import SyncEntityService from "./SyncEntityService";
-import { AhoraDocSource } from "../docsources";
+import { AhoraDocSource } from "../models/docsources";
 import GithubSyncLabelsService, { GitHubLabel } from "../GithubSync/GithubSyncLabelsService";
 import GithubSyncMilestoneService, { GitHubMilestone } from "../GithubSync/GithubSyncMilestonesService";
 import AhoraMilestone, { AhoraMilestoneForUpdate } from "../models/Milestone";

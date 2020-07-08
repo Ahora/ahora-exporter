@@ -1,5 +1,5 @@
 import { AhoraDocSourceLabel, AhoraDocSourceLabelForUpdate } from "../models/DocSourceLabel";
-import { AhoraDocSource } from "../docsources";
+import { AhoraDocSource } from "../models/docsources";
 import GithubBaseSyncService from "./GithubBaseSyncService";
 import OrganizationData from "../organizationData";
 

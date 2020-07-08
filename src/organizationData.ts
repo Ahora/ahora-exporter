@@ -1,4 +1,4 @@
-import { AhoraDocSource } from "./docsources";
+import { AhoraDocSource } from "./models/docsources";
 import { RestCollectorClient } from "rest-collector";
 import { createRestClient } from "./RestClient";
 import SyncDocSource from "./Sync/SyncDocSource";
