@@ -30,6 +30,7 @@ export default class GithubSyncMilestoneService extends GithubBaseSyncService<Ah
             closedAt: source.closed_at,
             createdAt: source.created_at,
             description: source.description,
+            organizationId: this.docSource.organizationId,
             dueOn: source.due_on,
             sourceId: source.number,
             state: source.state,

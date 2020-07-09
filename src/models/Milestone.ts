@@ -2,6 +2,7 @@ export interface AhoraMilestoneForUpdate {
     id?: number;
     title: string;
     description: string;
+    organizationId: number;
     createdAt: Date;
     updatedAt: Date;
     sourceId: number;

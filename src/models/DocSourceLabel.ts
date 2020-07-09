@@ -3,6 +3,7 @@ export interface AhoraDocSourceLabelForUpdate {
     name: string;
     color: string;
     description: string;
+    organizationId: number;
 }
 
 export interface AhoraDocSourceLabel extends AhoraDocSourceLabelForUpdate {

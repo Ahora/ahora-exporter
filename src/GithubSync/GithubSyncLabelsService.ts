@@ -20,6 +20,7 @@ export default class GithubSyncLabelsService extends GithubBaseSyncService<Ahora
         const dist: AhoraDocSourceLabelForUpdate = {
             color: source.color,
             description: source.description,
+            organizationId: this.docSource.organizationId,
             name: source.name,
             sourceId: source.id
         }

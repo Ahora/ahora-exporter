@@ -18,7 +18,7 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
     private queue: PQueue;
     private reStartInterval?: NodeJS.Timeout;
 
-    constructor(organizationData: OrganizationData, docSource: AhoraDocSource, private readonly githubEntity: string, ahoraEntity: string, ahoraEndpoint?: string) {
+    constructor(organizationData: OrganizationData, docSource: AhoraDocSource, protected readonly githubEntity: string, ahoraEntity: string, ahoraEndpoint?: string) {
         super(ahoraEntity, organizationData, docSource, ahoraEndpoint);
 
         this.queue = new PQueue({concurrency: 30});

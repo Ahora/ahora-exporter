@@ -9,7 +9,7 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
     private readonly client: RestCollectorClient<TCreate>;
     private entitiesMap: Map<number, TCreate>;
 
-    constructor(private entityName: string, protected organizationData: OrganizationData, protected docSource: AhoraDocSource, ahoraEndpoint: string = "/api/organizations/{organizationId}/docsources/{docSourceId}/{entityName}") {
+    constructor(private entityName: string, protected organizationData: OrganizationData, protected docSource: AhoraDocSource, ahoraEndpoint: string = "/internal/sync/docsources/{docSourceId}/{entityName}") {
         this.client = createRestClient(ahoraEndpoint);
         this.entitiesMap = new Map<number, TCreate>();
     }
