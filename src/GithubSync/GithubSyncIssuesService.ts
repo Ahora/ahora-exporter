@@ -38,7 +38,7 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
 
     protected getQuery(): any {
         return {
-            state: this.docSource.lastUpdated === undefined ? "all": "open", //Pring all opened issues if first time of update (lastUpdate===null)
+            state: this.docSource.lastUpdated ?"all": "open",
             per_page: 100,
             since: this.docSource.lastUpdated
         };
@@ -60,6 +60,7 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
             locked: source.locked,
             closedAt: source.closed_at,
             commentsNumber: source.comments,
+            statusId:  source.state === "open" ? 1: 2,
             docTypeId: ISSUE_DOCTYPE_ID,
             createdAt: source.created_at,
             updatedAt: source.updated_at,
@@ -73,10 +74,6 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
         if(source.user) {
             const ahoraReporter: AhoraUser = await addUserFromGithubUser(source.user);
             doc.reporterUserId = ahoraReporter.id;
-        }
-
-        if(source.state) {
-            doc.statusId =  source.state === "open" ? 1: 2;
         }
 
         if(source.milestone) {
