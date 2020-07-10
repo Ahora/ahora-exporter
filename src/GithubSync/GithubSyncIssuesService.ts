@@ -38,6 +38,7 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
 
     protected getQuery(): any {
         return {
+            direction: "asc",
             state: this.docSource.lastUpdated ?"all": "open",
             per_page: 100,
             since: this.docSource.lastUpdated
