@@ -7,7 +7,7 @@ import OrganizationData from "../organizationData";
 
 export default abstract class SyncEntityService<TCreate extends { id?: any, sourceId: number }, TSource extends { id: any }, TUPDATE = TCreate > {
     private readonly client: RestCollectorClient<TCreate>;
-    private entitiesMap: Map<number, TCreate>;
+    private entitiesMap: Map<number, TCreate | Promise<TCreate>>;
 
     constructor(private entityName: string, protected organizationData: OrganizationData, protected docSource: AhoraDocSource, ahoraEndpoint: string = "/internal/sync/docsources/{docSourceId}/{entityName}") {
         this.client = createRestClient(ahoraEndpoint);
@@ -38,12 +38,17 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
     }
 
     public async upsert(source: TSource): Promise<TCreate> {
-        const entityFromCache: TCreate | undefined = this.entitiesMap.get(source.id);
+        const entityFromCache: TCreate | Promise<TCreate> | undefined = this.entitiesMap.get(source.id);
         if(entityFromCache) {
-            return Promise.resolve(entityFromCache);
+
+            if(entityFromCache instanceof Promise) {
+                return await entityFromCache;
+            }
+            else {
+                return Promise.resolve(entityFromCache);
+            }
         }
         else {
-
             const dist = await this.converSourceToDist(source);
             const result = await this.client.post({
                 params: { 
@@ -54,8 +59,8 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
                 data: dist
             });
             const entityFromServer = result.data;
-            this.entitiesMap.set(source.id, entityFromServer);
             await this.afterSyncEntity(entityFromServer);
+            this.entitiesMap.set(source.id, entityFromServer);
             return entityFromServer;            
         }
     }
