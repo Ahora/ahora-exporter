@@ -16,8 +16,6 @@ export interface GithubPullRequestAdditionalData {
 
 export interface GithubPull extends GithubIssue {
     draft: boolean;
-    merged: boolean;
-    merged_by?: GithubUser;
     merged_at?: Date;
     mergeable: boolean | null;
     merge_commit_sha: string;
@@ -43,16 +41,28 @@ export default class GithubSyncPullsService extends GithubSyncIssuesService<Ahor
         doc.docTypeId = PULL_REQUEST_ID;
 
         let mergedByUserId: number | undefined;
-        if(source.merged_by) {
-            const ahoraAssignee: AhoraUser = await addUserFromGithubUser(source.merged_by);
-            mergedByUserId = ahoraAssignee.id
+
+
+        if(source.state === "open") {
+            if(source.draft) {
+                doc.statusId = 4;
+            }
+        }
+        else {
+            if(source.merge_commit_sha) {
+                doc.statusId = 3;
+
+                if(source.user) {
+                    const ahoraAssignee: AhoraUser = await addUserFromGithubUser(source.user);
+                    mergedByUserId = ahoraAssignee.id;
+                }
+            }
         }
 
         doc.metadata= {
             draft: source.draft,
             merge_commit_sha: source.merge_commit_sha,
             mergeable: source.mergeable,
-            merged: source.merged,
             merged_at: source.merged_at,
             merged_by: mergedByUserId
         };

@@ -40,6 +40,7 @@ const start = async () => {
 
     for (let index = 0; index < sources.length; index++) {
         const source = sources[index];
+
         if(!organizationDocSourceMap.has(source.organizationFK.login)) {
             organizationDocSourceMap.set(source.organizationFK.login, []);
         }
@@ -48,7 +49,6 @@ const start = async () => {
         if(docSources) {
             docSources.push(source);
         }
-        
     }
 
     organizationDocSourceMap.forEach(async (val, key) =>{
