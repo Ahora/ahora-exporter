@@ -13,4 +13,7 @@ COPY . /app
 
 RUN npm run build
 
+RUN chmod +x ./dist/cron.js
+RUN chmod +x ./dist/export.js
+
 CMD ["npm", "run", "prodstart"]

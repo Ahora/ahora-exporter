@@ -39,6 +39,7 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
         let totalNumberOfEntities = 0;
 
         do {
+            
             const client: RestCollectorClient = createGithubRestClient(`https://api.github.com/repos/{organization}/{repo}/${this.githubEntity}`);
             //Get by page
             let result = await client.get({ 
@@ -46,6 +47,9 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
                 params: {
                     organization: this.docSource.organization,
                     repo: this.docSource.repo
+                },
+                bag: {
+                    tokens: this.organizationData.tokens
                 }
             });
 

@@ -6,7 +6,6 @@ export interface AhoraDocSource {
     organization: string;
     repo: string;
     lastUpdated?: Date;
-    syncing: boolean;
     organizationId: number;
     startSyncTime?: Date;
     organizationFK: {

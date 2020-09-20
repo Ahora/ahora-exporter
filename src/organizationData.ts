@@ -1,14 +1,15 @@
 import { AhoraDocSource } from "./models/docsources";
-import { RestCollectorClient } from "rest-collector";
-import { createRestClient } from "./RestClient";
 import SyncDocSource from "./Sync/SyncDocSource";
-import { AhoraDoc } from "./models/Doc";
+import { createRestClient } from "./RestClient";
+
+const docSourceClient = createRestClient("/internal/organizations/{organizationId}/accesstokens");
+
 
 export default class OrganizationData {
     public readonly docSources: SyncDocSource[];
 
 
-    constructor(public readonly organizationId: string) {
+    constructor(public readonly organizationId: number, public readonly tokens: string[]) {
         this.docSources = []
         
     }
@@ -19,9 +20,11 @@ export default class OrganizationData {
 } 
 
 
-export const getOrganizationData = async (organizationId: string, docSources: AhoraDocSource[]): Promise<OrganizationData>=> {
-
-    const data: OrganizationData = new OrganizationData(organizationId);
+export const getOrganizationData = async (organizationId: number, docSources: AhoraDocSource[]): Promise<OrganizationData>=> {
+    const tokensResult =await  docSourceClient.get({ params: { organizationId }});
+    const tokens: string[] = tokensResult.data;
+    console.log(`got ${tokens.length} relevant tokens`);
+    const data: OrganizationData = new OrganizationData(organizationId, tokens);
     //Generate SyncDocSource and send organization data mostly for issues sync (getting accesses to statuses and doc types)
     docSources.forEach((source: AhoraDocSource) => {
         data.addDocSource(new SyncDocSource(data, source));

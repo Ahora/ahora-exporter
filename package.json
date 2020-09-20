@@ -6,11 +6,12 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node dist/index.js",
+    "start": "npm run build && dist/cron.js",
     "dev": "nodemon",
-    "debug": "npm run build && node --inspect dist/www.js",
+    "debugcron": "npm run build && node --inspect dist/cron.js",
+    "debugexporter": "npm run build && node --inspect dist/export.js",
     "test": "nyc mocha -r ts-node/register tests/**/*.ts",
-    "prodstart": "node dist/index.js"
+    "prodstart": "dist/cron.js"
   },
   "repository": {
     "type": "git",
@@ -27,7 +28,10 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@kubernetes/client-node": "^0.12.0",
+    "@types/argparse": "^2.0.0",
     "@types/node": "^14.0.6",
+    "argparse": "^2.0.1",
     "p-queue": "^6.3.0",
     "rest-collector": "^1.0.10",
     "single-line-log": "^1.1.2"

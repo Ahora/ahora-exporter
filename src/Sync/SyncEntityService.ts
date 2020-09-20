@@ -26,7 +26,6 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
     public async load() {
         const entitiesResult = await this.client.get({
             params: { 
-                organizationId: this.organizationData.organizationId, 
                 docSourceId: this.docSource.id,
                 entityName: this.entityName
             }
@@ -52,7 +51,6 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
             const dist = await this.converSourceToDist(source);
             const result = await this.client.post({
                 params: { 
-                    organizationId: this.organizationData.organizationId, 
                     docSourceId: this.docSource.id,
                     entityName: this.entityName
                 },
