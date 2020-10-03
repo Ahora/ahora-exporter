@@ -28,7 +28,7 @@ export default class SyncDocSource {
     }
 
     async sync() {
-        await this.issuesService.sync();
         await this.pullsService.sync();
+        await this.issuesService.sync();
     }
 }

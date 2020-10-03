@@ -31,7 +31,7 @@ const start = async () => {
                 "apiVersion": "argoproj.io/v1alpha1",
                 "kind": "Workflow",
                 "metadata": {
-                    "generateName": "ahoraexporter-github-exporter-",
+                    "generateName": `ahora-exporter-sync-${source.id}-`,
                 },
                 "spec": {
                     "arguments": {
@@ -40,8 +40,7 @@ const start = async () => {
                             { name: "organization",  value: `${source.organization}` },
                             { name: "repo",  value: `${source.repo}` },
                             { name: "lastUpdated",  value: `${source.lastUpdated}` },
-                            { name: "organizationId",  value: `${source.organizationId}` },
-                            { name: "organizationLogin",  value: `${source.organizationFK.login}` }
+                            { name: "organizationId",  value: `${source.organizationId}` }
                         ]
                     },
                     entrypoint: "github-exporter",
@@ -53,9 +52,9 @@ const start = async () => {
     
 
             try {
-                console.log(`calling crd: ${source.organizationFK.login} ${source.organization} ${source.repo}`);
+                console.log(`calling crd: ${source.organizationId} ${source.organization} ${source.repo}`);
                 const tolat = await k8sApi.createNamespacedCustomObject("argoproj.io", "v1alpha1", "master", "workflows" , cr);
-                console.log(`pushed crd: ${source.organizationFK.login} ${source.organization} ${source.repo}`);
+                console.log(`pushed crd: ${source.organizationId} ${source.organization} ${source.repo}`);
             } catch (error) {
                 console.log(`error ${source.repo}!`);
                 console.log(error);

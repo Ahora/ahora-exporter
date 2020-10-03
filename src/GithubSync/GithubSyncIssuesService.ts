@@ -23,7 +23,7 @@ export interface GithubIssue {
     user: GithubUser;
     labels: GitHubLabel[];
     locked: boolean;
-    closed_at: string | null;
+    closed_at: string | Date | null;
     created_at: string;
     updated_at: string;
     pull_request?: any;
@@ -39,7 +39,7 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
     protected getQuery(): any {
         return {
             direction: "asc",
-            state: this.docSource.lastUpdated ? "all": "all",
+            state: this.docSource.lastUpdated ? "all": "open",
             per_page: 100,
             since: this.docSource.lastUpdated
         };

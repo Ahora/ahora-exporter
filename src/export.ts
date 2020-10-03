@@ -43,16 +43,14 @@ parser.add_argument('--githuborganization', '-go', { required: true});
 parser.add_argument('--githubrepo', "-gr", { required: true});
 parser.add_argument('--lastUpdated', "-l");
 parser.add_argument('--organizationId',"-oid", { required: true});
-parser.add_argument('--organizationName',"-oname", { required: true});
 
 const result = parser.parse_args();
 if(result) {
     doit(result.organizationId, [{
         id: parseInt(result.id),
         organization: result.githuborganization,
-        organizationFK: { login: result.organizationName},
         organizationId: parseInt(result.organizationId) ,
         repo: result.githubrepo,
-        lastUpdated: new Date(result.lastUpdated)
+        lastUpdated: result.lastUpdated && result.lastUpdated != "null" ? new Date(result.lastUpdated): undefined
     }])
 }

@@ -8,9 +8,6 @@ export interface AhoraDocSource {
     lastUpdated?: Date;
     organizationId: number;
     startSyncTime?: Date;
-    organizationFK: {
-        login: string;
-    }
 }
 
 const internalDocSource: RestCollectorClient = createRestClient("/internal/docsources");

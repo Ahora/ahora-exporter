@@ -49,7 +49,8 @@ export default class GithubSyncPullsService extends GithubSyncIssuesService<Ahor
             }
         }
         else {
-            if(source.merge_commit_sha) {
+            if(source.merged_at) {
+                source.closed_at = source.merged_at;
                 doc.statusId = 3;
 
                 if(source.user) {

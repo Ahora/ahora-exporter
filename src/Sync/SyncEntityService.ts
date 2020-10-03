@@ -48,7 +48,7 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
             }
         }
         else {
-            const dist = await this.converSourceToDist(source);
+            const dist = await this.converSourceToDist(source);  
             const result = await this.client.post({
                 params: { 
                     docSourceId: this.docSource.id,
