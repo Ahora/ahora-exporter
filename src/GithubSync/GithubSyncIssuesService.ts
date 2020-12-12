@@ -40,7 +40,7 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
         return {
             direction: "asc",
             state: this.docSource.lastUpdated ? "all": "open",
-            per_page: 100,
+            per_page: 30,
             since: this.docSource.lastUpdated
         };
     }

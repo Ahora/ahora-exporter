@@ -4,7 +4,6 @@ import { createGithubRestClient } from "../RestClient";
 import { RestCollectorClient } from "rest-collector";
 import OrganizationData from "../organizationData";
 import PQueue from "p-queue";
-import { stdout } from "single-line-log";
 
 export interface GitHubLabel {
     id: number,
@@ -17,11 +16,13 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
     
     private queue: PQueue;
     private reStartInterval?: NodeJS.Timeout;
+    private currentPage: number;
 
     constructor(organizationData: OrganizationData, docSource: AhoraDocSource, protected readonly githubEntity: string, ahoraEntity: string, ahoraEndpoint?: string) {
         super(ahoraEntity, organizationData, docSource, ahoraEndpoint);
 
-        this.queue = new PQueue({concurrency: 30});
+        this.queue = new PQueue({concurrency: 10});
+        this.currentPage = 1;
     }
 
     //Default implementation is to do nothing.
@@ -37,7 +38,6 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
         let shouldContinue: boolean = true;
         let page = 1;
         let totalNumberOfEntities = 0;
-
         do {
             
             const client: RestCollectorClient = createGithubRestClient(`https://api.github.com/repos/{organization}/{repo}/${this.githubEntity}`);
@@ -96,6 +96,5 @@ export default abstract class GithubBaseSyncService<TDIST extends { id?: number,
         const totalEntities = await this.getEntities();
         console.log(`${this.docSource.organization}/${this.docSource.repo}`, totalEntities, this.githubEntity);
         await this.queue.onIdle(); 
-        
        }
 }
