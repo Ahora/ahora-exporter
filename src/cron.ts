@@ -10,7 +10,6 @@ const start = async () => {
     console.log("get sources");
     const sources =  await getAllDocSources();
 
-    try {
         console.log("started to load kube config");
         const kc = new KubeConfig();
         try {
@@ -61,16 +60,6 @@ const start = async () => {
             }
 
         });
-
-    } catch (error) {
-        console.log("-------------------------------error--------------------------------");
-        console.log(error);
-    }
-
-
-
-  
-
 }
 
 start();
