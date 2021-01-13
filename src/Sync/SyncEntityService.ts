@@ -5,8 +5,9 @@ import { AhoraDocSource } from "../models/docsources";
 import OrganizationData from "../organizationData";
 
 
-export default abstract class SyncEntityService<TCreate extends { id?: any, sourceId: number }, TSource extends { id: any }, TUPDATE = TCreate > {
+export default abstract class SyncEntityService<TCreate extends { id?: any, sourceId: number}, TSource extends { id: any }, TUPDATE = TCreate > {
     private readonly client: RestCollectorClient<TCreate>;
+    private onUpdate?: (lastSyncTime: Date | string) => void;
     private entitiesMap: Map<number, TCreate | Promise<TCreate>>;
 
     constructor(private entityName: string, protected organizationData: OrganizationData, protected docSource: AhoraDocSource, ahoraEndpoint: string = "/internal/sync/docsources/{docSourceId}/{entityName}") {
@@ -20,7 +21,8 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
     protected afterSyncEntity(entity: TCreate): Promise<void> { return Promise.resolve(); }
     protected abstract async updateDist(sources: TSource[]): Promise<void>;
 
-    public async sync(): Promise<void> {
+    public async sync(onUpdate?: (lastSyncTime: Date| string) => void): Promise<void> {
+        this.onUpdate = onUpdate;
         await this.startSync(); 
     }
     public async load() {
@@ -56,6 +58,11 @@ export default abstract class SyncEntityService<TCreate extends { id?: any, sour
                 },
                 data: dist
             });
+
+            if(this.onUpdate) {
+                //TODO: Fix this ugly code!
+                this.onUpdate((dist as any).updatedAt)
+            }
             const entityFromServer = result.data;
             await this.afterSyncEntity(entityFromServer);
             this.entitiesMap.set(source.id, entityFromServer);

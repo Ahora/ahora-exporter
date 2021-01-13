@@ -9,7 +9,7 @@
     "start": "npm run build && dist/cron.js",
     "dev": "nodemon",
     "debugcron": "npm run build && node --inspect dist/cron.js",
-    "debugexporter": "npm run build && node --inspect dist/export.js",
+    "debugexporter": "npm run build && node --inspect dist/export.js -i 11 -go openshift -gr assisted-service -oid 2",
     "test": "nyc mocha -r ts-node/register tests/**/*.ts",
     "prodstart": "dist/cron.js"
   },

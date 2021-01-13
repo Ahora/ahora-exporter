@@ -20,7 +20,12 @@ const doit = async (organizationId: number, docSources: AhoraDocSource[]): Promi
             }
         });
 
-        await docSource.sync();
+        await docSource.sync(async (lastUpdated: Date | string) => {
+            await docSourceClient.put({
+                params: { docSourceId: docSource.docSource.id },
+                data: { lastUpdated }             
+            });
+        });
 
         //Report start completed
         await docSourceClient.put({
@@ -41,8 +46,8 @@ const parser = new ArgumentParser({
 parser.add_argument('--id', '-i', { required: true});
 parser.add_argument('--githuborganization', '-go', { required: true});
 parser.add_argument('--githubrepo', "-gr", { required: true});
-parser.add_argument('--lastUpdated', "-l");
 parser.add_argument('--organizationId',"-oid", { required: true});
+parser.add_argument('--lastUpdated', "-l");
 
 const result = parser.parse_args();
 if(result) {

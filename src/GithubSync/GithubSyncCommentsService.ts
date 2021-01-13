@@ -1,5 +1,5 @@
 import GithubBaseSyncService from "./GithubBaseSyncService";
-import { GithubUser, AhoraUser, addUserFromGithubUser } from "../models/users";
+import { GithubUser, AhoraUserSource, addUserFromGithubUser } from "../models/users";
 import { Comment } from "../models/Comment";
 import OrganizationData from "../organizationData";
 import SyncDocSource from "../Sync/SyncDocSource";
@@ -38,8 +38,8 @@ export default class GithubSyncCommentsService extends GithubBaseSyncService<Com
         }
 
         if(source.user) {
-            const ahoraReporter: AhoraUser = await addUserFromGithubUser(source.user);
-            comment.authorUserId = ahoraReporter.id;
+            const ahoraReporter: AhoraUserSource = await addUserFromGithubUser(source.user);
+            comment.authorUserId = ahoraReporter.userId;
         }
         return comment;
     }

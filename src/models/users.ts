@@ -7,43 +7,43 @@ export interface GithubUser {
     login: string;
 }
 
-export interface User {
+export interface UserSource {
     username: string;
     displayName: string;
-    gitHubId: string;
+    authSourceId: string;
 }
 
-export interface AhoraUser extends User {
-    id: number;
+export interface AhoraUserSource extends UserSource {
+    userId: number;
 }
 
-const usersCache: Map<string, AhoraUser> = new Map<string, AhoraUser>();
+const usersCache: Map<string, AhoraUserSource> = new Map<string, AhoraUserSource>();
 const usersRestClient: RestCollectorClient = createRestClient("/internal/users");
 
-export const addUserFromGithubUser = async (user: GithubUser):  Promise<AhoraUser> => {
-    return await addUser({  displayName: user.name, gitHubId: user.id.toString(), username: user.login});
+export const addUserFromGithubUser = async (user: GithubUser):  Promise<AhoraUserSource> => {
+    return await addUser({  displayName: user.name, authSourceId: user.id.toString(), username: user.login});
 }
 
 
-export const addUser = async (user: User):  Promise<AhoraUser> => {
-    let userFromCache: AhoraUser | undefined = usersCache.get(user.gitHubId);
+export const addUser = async (user: UserSource):  Promise<AhoraUserSource> => {
+    let userFromCache: AhoraUserSource | undefined = usersCache.get(user.authSourceId);
     if(userFromCache) {
         return Promise.resolve(userFromCache);
     }
 
     //Try to get user from DB
-    const existingUsersResult = await usersRestClient.get( { query: { gitHubId: user.gitHubId} });
-    const existingUsersResults: AhoraUser[] = existingUsersResult.data;
+    const existingUsersResult = await usersRestClient.get( { query: { authSourceId: user.authSourceId } });
+    const existingUsersResults: AhoraUserSource[] = existingUsersResult.data;
     if(existingUsersResults.length  > 0) {
-        const userFromServer: AhoraUser = existingUsersResults[0];
-        usersCache.set(userFromServer.gitHubId, userFromServer);
+        const userFromServer: AhoraUserSource = existingUsersResults[0];
+        usersCache.set(userFromServer.authSourceId, userFromServer);
         userFromCache = userFromServer;
     }
     else {
         //Add user if it's not available in cache and also in Ahora Server!
         const addUserresult = await usersRestClient.post({data: user});
-        const addedUser: AhoraUser  = addUserresult.data;
-        usersCache.set(addedUser.gitHubId, addedUser);
+        const addedUser: AhoraUserSource  = addUserresult.data;
+        usersCache.set(addedUser.authSourceId, addedUser);
         userFromCache = addedUser;
     }
 

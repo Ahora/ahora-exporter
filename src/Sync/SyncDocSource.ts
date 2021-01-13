@@ -27,8 +27,8 @@ export default class SyncDocSource {
         await this.milestonesService.load();
     }
 
-    async sync() {
-        await this.pullsService.sync();
-        await this.issuesService.sync();
+    async sync(onUpdate: (lastSyncTime: Date| string) => void) {
+        await this.pullsService.sync(onUpdate);
+        await this.issuesService.sync(onUpdate);
     }
 }

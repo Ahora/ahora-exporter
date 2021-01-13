@@ -2,7 +2,7 @@ import { Doc } from "../models/Doc";
 import OrganizationData from "../organizationData";
 import SyncDocSource from "../Sync/SyncDocSource";
 import GithubSyncIssuesService, { GithubIssue } from "./GithubSyncIssuesService";
-import { GithubUser, AhoraUser, addUserFromGithubUser } from "../models/users";
+import { GithubUser, AhoraUserSource, addUserFromGithubUser } from "../models/users";
 import { PULL_REQUEST_ID } from "../models/docTypes";
 
 export interface GithubPullRequestAdditionalData {
@@ -54,8 +54,8 @@ export default class GithubSyncPullsService extends GithubSyncIssuesService<Ahor
                 doc.statusId = 3;
 
                 if(source.user) {
-                    const ahoraAssignee: AhoraUser = await addUserFromGithubUser(source.user);
-                    mergedByUserId = ahoraAssignee.id;
+                    const ahoraAssignee: AhoraUserSource = await addUserFromGithubUser(source.user);
+                    mergedByUserId = ahoraAssignee.userId;
                 }
             }
         }

@@ -1,5 +1,5 @@
 import GithubBaseSyncService from "./GithubBaseSyncService";
-import { GithubUser, AhoraUser, addUserFromGithubUser } from "../models/users";
+import { GithubUser, AhoraUserSource, addUserFromGithubUser } from "../models/users";
 import { GitHubLabel } from "./GithubSyncLabelsService";
 import { Doc } from "../models/Doc";
 import OrganizationData from "../organizationData";
@@ -37,11 +37,17 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
     }
 
     protected getQuery(): any {
+        let since = this.docSource.lastUpdated;
+
+        if(!since) {
+            since = new Date()
+            since.setDate(since.getDate() -90)
+        }
         return {
             direction: "asc",
-            state: this.docSource.lastUpdated ? "all": "open",
+            state: "all",
             per_page: 30,
-            since: this.docSource.lastUpdated
+            since
         };
     }
 
@@ -68,13 +74,13 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
         }
 
         if(source.assignee) {
-            const ahoraAssignee: AhoraUser = await addUserFromGithubUser(source.assignee);
-            doc.assigneeUserId = ahoraAssignee.id
+            const ahoraAssignee: AhoraUserSource = await addUserFromGithubUser(source.assignee);
+            doc.assigneeUserId = ahoraAssignee.userId
         }
 
         if(source.user) {
-            const ahoraReporter: AhoraUser = await addUserFromGithubUser(source.user);
-            doc.reporterUserId = ahoraReporter.id;
+            const ahoraReporter: AhoraUserSource = await addUserFromGithubUser(source.user);
+            doc.reporterUserId = ahoraReporter.userId;
         }
 
         if(source.milestone) {
