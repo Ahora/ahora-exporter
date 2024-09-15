@@ -44,10 +44,11 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
             since.setDate(since.getDate() -90)
         }
         return {
-            direction: "asc",
+            direction: "desc",
             state: "all",
             per_page: 30,
-            since
+            since,
+            sort: 'updated'
         };
     }
 
@@ -74,12 +75,12 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
         }
 
         if(source.assignee) {
-            const ahoraAssignee: AhoraUserSource = await addUserFromGithubUser(source.assignee);
+            const ahoraAssignee: AhoraUserSource = await addUserFromGithubUser(source.assignee, this.organizationData);
             doc.assigneeUserId = ahoraAssignee.userId
         }
 
         if(source.user) {
-            const ahoraReporter: AhoraUserSource = await addUserFromGithubUser(source.user);
+            const ahoraReporter: AhoraUserSource = await addUserFromGithubUser(source.user, this.organizationData);
             doc.reporterUserId = ahoraReporter.userId;
         }
 
@@ -99,7 +100,7 @@ export default class GithubSyncIssuesService<TDIST extends Doc = Doc, TSource ex
     }
 
     protected async afterSyncEntity(entity: Doc): Promise<void> { 
-        const syncCommentService = new GithubSyncCommentsService(entity, this.organizationData, this.syncDocSource);
-        await syncCommentService.sync();
+        //const syncCommentService = new GithubSyncCommentsService(entity, this.organizationData, this.syncDocSource);
+        //await syncCommentService.sync();
     }
 }

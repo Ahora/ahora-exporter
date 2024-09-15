@@ -38,7 +38,7 @@ export default class GithubSyncCommentsService extends GithubBaseSyncService<Com
         }
 
         if(source.user) {
-            const ahoraReporter: AhoraUserSource = await addUserFromGithubUser(source.user);
+            const ahoraReporter: AhoraUserSource = await addUserFromGithubUser(source.user, this.organizationData);
             comment.authorUserId = ahoraReporter.userId;
         }
         return comment;

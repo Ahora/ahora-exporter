@@ -1,16 +1,21 @@
 import { RestCollectorClient } from "rest-collector";
-import { createRestClient } from "../RestClient";
+import OrganizationData from "../organizationData";
+import { createGithubRestClient, createRestClient } from "../RestClient";
 
 export interface GithubUser {
     name: string;
     id: number;
     login: string;
+    location?: string;
+    company?: string
 }
 
 export interface UserSource {
     username: string;
     displayName: string;
     authSourceId: string;
+    location?: string;
+    company?: string
 }
 
 export interface AhoraUserSource extends UserSource {
@@ -19,9 +24,18 @@ export interface AhoraUserSource extends UserSource {
 
 const usersCache: Map<string, AhoraUserSource> = new Map<string, AhoraUserSource>();
 const usersRestClient: RestCollectorClient = createRestClient("/internal/users");
+const GithubUserClient: RestCollectorClient = createGithubRestClient(`https://api.github.com/users/{username}`);
 
-export const addUserFromGithubUser = async (user: GithubUser):  Promise<AhoraUserSource> => {
-    return await addUser({  displayName: user.name, authSourceId: user.id.toString(), username: user.login});
+
+export const addUserFromGithubUser = async (user: GithubUser, organizationData: OrganizationData):  Promise<AhoraUserSource> => {
+
+    const fullGithubUser = await GithubUserClient.get({ 
+        params: { username: user.login },
+        bag: {
+            tokens: organizationData.tokens
+        }
+    });
+    return await addUser({  displayName: user.name, authSourceId: user.id.toString(), username: user.login, location: fullGithubUser.data.location, company: fullGithubUser.data.company});
 }
 
 
@@ -46,18 +60,6 @@ export const addUser = async (user: UserSource):  Promise<AhoraUserSource> => {
         usersCache.set(addedUser.authSourceId, addedUser);
         userFromCache = addedUser;
     }
-
-    //Don't add organizations for each user
-    /*
-    if(userFromCache) {
-        const githubResult = await userOrganizationsClient.get({
-            params: { login: userFromCache.username} 
-        });
-
-        const GithubOrganizations: GithubOrganization[] = githubResult.data;
-        await addMultipleOrganization(GithubOrganizations, userFromCache.id);
-    }
-    */
 
     return userFromCache;
 }

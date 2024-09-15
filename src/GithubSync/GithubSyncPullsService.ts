@@ -30,6 +30,22 @@ export default class GithubSyncPullsService extends GithubSyncIssuesService<Ahor
         super(organizationData, syncDocSource, "pulls");
     }
 
+    protected getQuery(): any {
+        let since = this.docSource.lastUpdated;
+
+        if(!since) {
+            since = new Date()
+            since.setDate(since.getDate() -90)
+        }
+        return {
+            direction: "desc",
+            state: "all",
+            per_page: 30,
+            since,
+            sort: 'updated'
+        };
+    }
+
 
     //Override filter sources to allow all entities if getting pull requests
     protected filterSources(sources: GithubPull[]): Promise<GithubPull[]> {
@@ -54,7 +70,7 @@ export default class GithubSyncPullsService extends GithubSyncIssuesService<Ahor
                 doc.statusId = 3;
 
                 if(source.user) {
-                    const ahoraAssignee: AhoraUserSource = await addUserFromGithubUser(source.user);
+                    const ahoraAssignee: AhoraUserSource = await addUserFromGithubUser(source.user, this.organizationData);
                     mergedByUserId = ahoraAssignee.userId;
                 }
             }
